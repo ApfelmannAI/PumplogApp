@@ -1,0 +1,187 @@
+{
+  "info": {
+    "name": "REWE Mobile API (publicly known endpoints)",
+    "_postman_id": "b0f53916-2f0b-4f0b-9cd9-0d5a412a6f11",
+    "description": "Collection with publicly known REWE mobile endpoints. Note: Many endpoints are protected by Cloudflare mTLS and may not work without valid client cert/session headers.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "mobile_api_host", "value": "https://mobile-api.rewe.de" },
+    { "key": "mobile_clients_host", "value": "https://mobile-clients-api.rewe.de" },
+    { "key": "market_id", "value": "831002" },
+    { "key": "zip", "value": "50667" },
+    { "key": "query", "value": "milch" },
+    { "key": "category_slug", "value": "obst-gemuese" },
+    { "key": "listing_id", "value": "example-listing-id" },
+    { "key": "product_id", "value": "example-product-id" },
+    { "key": "recipe_id", "value": "example-recipe-id" },
+    { "key": "service_type", "value": "PICKUP" },
+    { "key": "basket_id", "value": "example-basket-id" }
+  ],
+  "item": [
+    {
+      "name": "Markets - Search",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{mobile_clients_host}}/api/stationary-markets?search={{query}}"
+      }
+    },
+    {
+      "name": "Markets - Details",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{mobile_clients_host}}/api/stationary-markets/{{market_id}}"
+      }
+    },
+    {
+      "name": "Discounts - Stationary Offers",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{mobile_clients_host}}/api/stationary-offers/{{market_id}}"
+      }
+    },
+    {
+      "name": "Products - Search",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{mobile_clients_host}}/api/products?query={{query}}&page=1&objectsPerPage=30"
+      }
+    },
+    {
+      "name": "Products - By Category",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{mobile_clients_host}}/api/products?query=&categorySlug={{category_slug}}&page=1&objectsPerPage=30"
+      }
+    },
+    {
+      "name": "Products - Detail",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{mobile_clients_host}}/api/products/{{product_id}}"
+      }
+    },
+    {
+      "name": "Products - Recommendations",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{mobile_clients_host}}/api/products/recommendations?listingIds={{listing_id}}"
+      }
+    },
+    {
+      "name": "Products - Suggestions",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{mobile_api_host}}/products/suggestion-search?query={{query}}&page=1&objectsPerPage=25"
+      }
+    },
+    {
+      "name": "Shop Overview",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{mobile_api_host}}/api/v3/shop-overview?serviceTypes={{service_type}}&marketCode={{market_id}}&deliveryZipCode={{zip}}"
+      }
+    },
+    {
+      "name": "Recipes - Hub",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{mobile_api_host}}/api/v3/recipe-hub"
+      }
+    },
+    {
+      "name": "Recipes - Search",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{mobile_api_host}}/api/v3/recipe-search?searchTerm={{query}}&sorting=relevance&page=1&objectsPerPage=20"
+      }
+    },
+    {
+      "name": "Recipes - Details",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{mobile_api_host}}/api/v3/recipe-hub-details?recipeId={{recipe_id}}"
+      }
+    },
+    {
+      "name": "Recipes - Popular Search Terms",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{mobile_api_host}}/api/v3/recipe-popular-search-terms"
+      }
+    },
+    {
+      "name": "Recalls",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{mobile_clients_host}}/api/products/recalls"
+      }
+    },
+    {
+      "name": "Service Portfolio",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{mobile_clients_host}}/api/service-portfolio/{{zip}}"
+      }
+    },
+    {
+      "name": "Bulky Goods Config",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{mobile_clients_host}}/api/bulky-goods-configuration/{{market_id}}/service-types/{{service_type}}"
+      }
+    },
+    {
+      "name": "Basket - Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"includeTimeslot\": true\n}"
+        },
+        "url": "{{mobile_clients_host}}/api/baskets"
+      }
+    },
+    {
+      "name": "Basket - Set Item Quantity",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"basketVersion\": 1,\n  \"quantity\": 1,\n  \"includeTimeslot\": true\n}"
+        },
+        "url": "{{mobile_clients_host}}/api/baskets/{{basket_id}}/listings/{{listing_id}}"
+      }
+    },
+    {
+      "name": "Basket - Remove Item",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{mobile_clients_host}}/api/baskets/{{basket_id}}/listings/{{listing_id}}"
+      }
+    }
+  ]
+}
