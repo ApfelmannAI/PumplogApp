@@ -21,10 +21,10 @@ after_lines = [
 subject = f"[Knieschleifer Fun Fact] {datetime.now(timezone.utc).strftime('%d.%m.%Y %H:%M UTC')}"
 body = (
     "Moin Flo,\n\n"
-    "hier ist die Sekretärin mit dem Tages-Fun-Fact aus der Knieschleifer-Zentrale:\n\n"
+    "Sekretärin der Knieschleifer-Zentrale hier – Tagesansage:\n\n"
     f"{fact}\n\n"
     f"{random.choice(after_lines)}\n\n"
-    "Bleib stabil und lass die Linie sprechen.\n"
+    "Gruß aus der Kurven-Hölle. Fahr sauber, nicht nur laut.\n"
 )
 
 env = os.environ.copy()
