@@ -72,6 +72,50 @@ def get_plain_text(msg):
 with open(REPLY_TEMPLATES_PATH, "r", encoding="utf-8") as f:
     templates = json.load(f)
 
+
+def build_context_reply(text: str) -> str:
+    t = (text or "").lower()
+    if not t:
+        return random.choice(templates)
+
+    if "reifen" in t or "druck" in t:
+        return (
+            "Stark, dazu kurz ernst: Reifendruck kalt sauber einstellen und nach Temperaturbild gehen. "
+            "Wenn die Flanke schmiert wie Mayo, bist du entweder zu heiß oder daneben mit dem Setup, Bruder."
+        )
+    if "kette" in t or "ritz" in t or "ketten" in t:
+        return (
+            "Guter Punkt. Kette reinigen, korrekt spannen und schmieren – sonst prügelst du Lastspitzen ins Getriebe. "
+            "Dann klingt’s kurz geil und wird langfristig teuer."
+        )
+    if "fahrwerk" in t or "zugstufe" in t or "druckstufe" in t or "feder" in t:
+        return (
+            "Ja man, Fahrwerk ist der Boss. Erst Basis-Setup sauber (SAG/Clicker), dann am Kabel ziehen. "
+            "Mit Murks-Setup fährt selbst der schnellste Hund wie ein Einkaufswagen."
+        )
+    if "brem" in t or "abs" in t:
+        return (
+            "Bei Bremsen gilt: progressiv aufbauen, ruhig bleiben, Blick weit. ABS ist Schutzengel, aber kein Freifahrtschein. "
+            "Hirn bleibt Chef, immer."
+        )
+    if "kurve" in t or "linie" in t or "schräg" in t or "apex" in t:
+        return (
+            "Safe. Sauber rein, Linie halten, früh stabil ans Gas – dann bist du schnell ohne Zirkus. "
+            "Mehr Schräglage fürs Ego bringt weniger als ein sauberer Ausgang."
+        )
+    if "essen" in t or "fleisch" in t or "hunger" in t:
+        return (
+            "Endlich ein vernünftiges Thema: Nur Fleisch macht Fleisch. "
+            "Iss ordentlich, trink Wasser, sonst ist deine Reaktionszeit morgen aus dem Baumarkt."
+        )
+    if "?" in text:
+        return (
+            "Kurzantwort: Ja, machbar – aber nur sauber. Erst Technik korrekt, dann Pace. "
+            "Wenn du willst, schick ich dir die 3-Minuten-Checkliste vor der nächsten Runde."
+        )
+
+    return random.choice(templates)
+
 state = load_state()
 today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 replies_today = state.get("daily", {}).get(today, 0)
@@ -140,8 +184,13 @@ for msg_id in msg_ids:
         break
 
     reply_subject = f"Re: {subj}" if subj else "Kurze Antwort aus der Knieschleifer-Zentrale"
-    base = random.choice(templates)
-    reply_body = f"{base}\n\nKurz zu deiner Nachricht: \"{teaser or 'Gelesen und notiert.'}\"\n\n– Kurvenkathi"
+    base = build_context_reply(body_in)
+    reply_body = (
+        f"{base}\n\n"
+        f"Hab deine Nachricht gelesen: \"{teaser or 'Gelesen und notiert.'}\"\n\n"
+        "Wenn du willst, antworte ich dir direkt mit Setup-Tipps für genau das Thema.\n\n"
+        "– Kurvenkathi"
+    )
 
     env = os.environ.copy()
     env["SMTP_TO"] = from_addr
