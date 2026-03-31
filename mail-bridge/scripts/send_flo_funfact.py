@@ -18,13 +18,29 @@ after_lines = [
     "Und jetzt vernünftig futtern, Flo: Nur Fleisch macht Fleisch."
 ]
 
-subject = f"[Knieschleifer Fun Fact] {datetime.now(timezone.utc).strftime('%d.%m.%Y %H:%M UTC')}"
+secretary_name = random.choice([
+    "Kurvenkathi",
+    "Apex-Aylin",
+    "Schräglagen-Susi",
+    "Rennsemmel-Rita",
+    "Benzin-Bianca",
+])
+
+subject = random.choice([
+    "Flo, kurzer Servicehinweis aus der Knieschleifer-Zentrale",
+    "Moin Flo – dein täglicher Motorrad-Quatsch mit Sinn",
+    "Flo, bevor du wieder am Kabel ziehst",
+    "Ein kurzer Gruß aus der Kurven-Hölle, Flo",
+    "Flo, einmal Technik in lecker und frech",
+])
+
 body = (
-    "Moin Flo,\n\n"
-    "Sekretärin der Knieschleifer-Zentrale hier – Tagesansage:\n\n"
+    f"Moin Flo,\n\n"
+    f"hier ist {secretary_name}, deine inoffizielle Sekretärin der Knieschleifer-Gang. "
+    "Ich klatsch dir kurz was Nützliches rein, bevor du wieder wie ein Irrer in die Kurven stichst:\n\n"
     f"{fact}\n\n"
     f"{random.choice(after_lines)}\n\n"
-    "Gruß aus der Kurven-Hölle. Fahr sauber, nicht nur laut.\n"
+    "So, genug gelabert. Helm zu, Hirn an, dann gib ihm.\n"
 )
 
 env = os.environ.copy()
