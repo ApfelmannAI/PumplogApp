@@ -1,0 +1,11 @@
+services:
+  mailer:
+    image: python:3.12-alpine
+    working_dir: /app
+    env_file:
+      - .env
+    volumes:
+      - ./scripts:/app/scripts:ro
+      - ./outbox:/app/outbox
+    command: ["sh", "-c", "sleep infinity"]
+    restart: unless-stopped
