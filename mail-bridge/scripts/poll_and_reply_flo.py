@@ -18,6 +18,11 @@ IMAP_USER = os.getenv("IMAP_USER", os.getenv("SMTP_USER", "")).strip()
 IMAP_PASS = os.getenv("IMAP_PASS", os.getenv("SMTP_PASS", "")).strip()
 IMAP_FOLDER = os.getenv("IMAP_FOLDER", "INBOX")
 FLO_EMAIL = os.getenv("FLO_EMAIL", "florian.kunzweiler@dwarftech.de").strip().lower()
+ALLOWED_REPLY_SENDERS = {
+    s.strip().lower()
+    for s in os.getenv("ALLOWED_REPLY_SENDERS", FLO_EMAIL).split(",")
+    if s.strip()
+}
 MAX_REPLIES_PER_DAY = int(os.getenv("MAX_REPLIES_PER_DAY", "2"))
 
 if not IMAP_HOST or not IMAP_USER or not IMAP_PASS:
@@ -78,7 +83,7 @@ mail = imaplib.IMAP4_SSL(IMAP_HOST, IMAP_PORT)
 mail.login(IMAP_USER, IMAP_PASS)
 mail.select(IMAP_FOLDER)
 
-status, data = mail.search(None, 'UNSEEN', f'FROM "{FLO_EMAIL}"')
+status, data = mail.search(None, 'UNSEEN')
 if status != "OK":
     print("NO_SEARCH_RESULTS")
     mail.logout()
@@ -95,7 +100,7 @@ msg_ids = list(reversed(msg_ids))
 
 for msg_id in msg_ids:
     sid = msg_id.decode("utf-8", errors="ignore")
-    if sid in state.get("replied_ids", []):
+    if sid in state.get("replied_ids", []) or sid in state.get("ignored_ids", []):
         continue
 
     status, msg_data = mail.fetch(msg_id, "(RFC822)")
@@ -106,7 +111,21 @@ for msg_id in msg_ids:
     msg = email.message_from_bytes(raw)
 
     from_addr = email.utils.parseaddr(msg.get("From", ""))[1].lower()
-    if FLO_EMAIL not in from_addr:
+    if from_addr not in ALLOWED_REPLY_SENDERS:
+        subj = decode_subject(msg.get("Subject", ""))
+        state.setdefault("unknown_senders", []).append(
+            {
+                "id": sid,
+                "from": from_addr,
+                "subject": subj,
+                "seen_at_utc": datetime.now(timezone.utc).isoformat(),
+            }
+        )
+        state.setdefault("ignored_ids", []).append(sid)
+        state["ignored_ids"] = state["ignored_ids"][-500:]
+        state["unknown_senders"] = state["unknown_senders"][-200:]
+        save_state(state)
+        print(f"UNKNOWN_SENDER:{from_addr}")
         continue
 
     subj = decode_subject(msg.get("Subject", ""))
@@ -119,7 +138,7 @@ for msg_id in msg_ids:
     reply_body = f"{base}\n\nKurz zu deiner Nachricht: \"{teaser or 'Gelesen und notiert.'}\"\n\n– Kurvenkathi"
 
     env = os.environ.copy()
-    env["SMTP_TO"] = FLO_EMAIL
+    env["SMTP_TO"] = from_addr
     env["MAIL_SUBJECT"] = reply_subject
     env["MAIL_BODY"] = reply_body
 
