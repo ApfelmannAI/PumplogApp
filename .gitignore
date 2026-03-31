@@ -17,3 +17,9 @@ Thumbs.db
 # Flutter generated (optional if generated later)
 android/.gradle/
 ios/Pods/
+.flutter-plugins
+.flutter-plugins-dependencies
+.metadata
+
+# Local working copies
+pumplog-source/

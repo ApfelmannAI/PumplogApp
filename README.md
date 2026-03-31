@@ -36,7 +36,20 @@ flutter run \
   --dart-define=OIDC_POST_LOGOUT_REDIRECT_URL=com.apfelmannai.pumplog:/logout
 ```
 
+## Build-Ergebnis (aktuell)
+
+- Debug APK erfolgreich gebaut:
+  - `build/app/outputs/flutter-apk/app-debug.apk`
+
+## Doku
+
+- Vollständiger Migrationsstand + Techstack:
+  - `docs/FLUTTER_MIGRATION.md`
+- Mockup Screenshots:
+  - `docs/screenshots/login_mock.png`
+  - `docs/screenshots/workouts_mock.png`
+
 ## Nächster Schritt
 
-- Android/iOS Redirect-URIs und Manifest/Info.plist final verdrahten
-- Restliche UI-Details (Analytics/Settings, Exercise-Editing, Reps-Modal)
+- Vollständiger Feature-Port (Analytics/Settings, Exercise-Editing, Reps-Modal)
+- Release-Signing + Release APK/AAB

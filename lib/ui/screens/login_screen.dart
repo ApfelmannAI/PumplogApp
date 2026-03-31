@@ -28,7 +28,7 @@ class LoginScreen extends ConsumerWidget {
             decoration: BoxDecoration(
               color: const Color(0xCC1C1C25),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.orange.withValues(alpha: 0.35)),
+              border: Border.all(color: Colors.orange.withOpacity(0.35)),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
