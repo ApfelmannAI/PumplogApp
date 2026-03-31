@@ -37,6 +37,8 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="com.apfelmannai.pumplog" android:path="/oauthredirect" />
                 <data android:scheme="com.apfelmannai.pumplog" android:path="/logout" />
+                <data android:scheme="https" android:host="pumplog.onlychris.net" android:path="/auth/callback" />
+                <data android:scheme="https" android:host="pumplog.onlychris.net" android:path="/auth/logout" />
             </intent-filter>
         </activity>
 

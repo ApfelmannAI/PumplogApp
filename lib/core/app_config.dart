@@ -16,14 +16,15 @@ class AppConfig {
     defaultValue: 'Se0ZrV0vLDMTrO2MTqS6iQk1Y7G1pvYaLpJMysRv',
   );
 
-  // Mobile redirect scheme (muss in Android/iOS passend registriert werden)
+  // Standard auf die bestehende Web-Redirect-URI, damit der vorhandene Client passt.
+  // Optional per --dart-define auf Custom Scheme überschreiben.
   static const oidcRedirectUrl = String.fromEnvironment(
     'OIDC_REDIRECT_URL',
-    defaultValue: 'com.apfelmannai.pumplog:/oauthredirect',
+    defaultValue: 'https://pumplog.onlychris.net/auth/callback',
   );
 
   static const oidcPostLogoutRedirectUrl = String.fromEnvironment(
     'OIDC_POST_LOGOUT_REDIRECT_URL',
-    defaultValue: 'com.apfelmannai.pumplog:/logout',
+    defaultValue: 'https://pumplog.onlychris.net/auth/logout',
   );
 }
