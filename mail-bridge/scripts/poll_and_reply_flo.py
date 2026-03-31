@@ -5,6 +5,8 @@ import os
 import random
 import re
 import subprocess
+import urllib.request
+import urllib.error
 from datetime import datetime, timezone
 from email.header import decode_header, make_header
 from email.utils import parsedate_to_datetime
@@ -24,6 +26,7 @@ ALLOWED_REPLY_SENDERS = {
     if s.strip()
 }
 MAX_REPLIES_PER_DAY = int(os.getenv("MAX_REPLIES_PER_DAY", "999"))
+DISCORD_WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL", "").strip()
 
 if not IMAP_HOST or not IMAP_USER or not IMAP_PASS:
     raise SystemExit("IMAP credentials missing (IMAP_HOST/IMAP_USER/IMAP_PASS)")
@@ -67,6 +70,23 @@ def get_plain_text(msg):
             charset = msg.get_content_charset() or "utf-8"
             return payload.decode(charset, errors="ignore")
     return ""
+
+
+def notify_discord(text: str):
+    if not DISCORD_WEBHOOK_URL:
+        return
+    data = json.dumps({"content": text}).encode("utf-8")
+    req = urllib.request.Request(
+        DISCORD_WEBHOOK_URL,
+        data=data,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=10) as _:
+            pass
+    except Exception:
+        pass
 
 
 with open(REPLY_TEMPLATES_PATH, "r", encoding="utf-8") as f:
@@ -172,6 +192,7 @@ for msg_id in msg_ids:
         state["unknown_senders"] = state["unknown_senders"][-200:]
         save_state(state)
         print(f"UNKNOWN_SENDER:{from_addr}")
+        notify_discord(f"📩 Unbekannter Absender erkannt: {from_addr} | Betreff: {subj or '(ohne Betreff)'}")
         continue
 
     subj = decode_subject(msg.get("Subject", ""))
@@ -210,6 +231,7 @@ for msg_id in msg_ids:
 
     sent_count += 1
     print("FLO_REPLY_SENT")
+    notify_discord(f"✅ E-Mail beantwortet an {from_addr} | Betreff: {reply_subject}")
 
 if sent_count == 0:
     print("NO_ACTION")
