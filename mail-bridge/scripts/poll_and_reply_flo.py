@@ -127,7 +127,7 @@ mail = imaplib.IMAP4_SSL(IMAP_HOST, IMAP_PORT)
 mail.login(IMAP_USER, IMAP_PASS)
 mail.select(IMAP_FOLDER)
 
-status, data = mail.search(None, 'ALL')
+status, data = mail.search(None, 'UNSEEN')
 if status != "OK":
     print("NO_SEARCH_RESULTS")
     mail.logout()
