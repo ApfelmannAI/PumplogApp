@@ -13,7 +13,7 @@ CRON_TMP=$(mktemp)
 
 cat >> "$CRON_TMP" <<EOF
 # BEGIN OPENCLAW_FLO_REPLY
-*/15 * * * * cd $BASE_DIR && /bin/sh ./reply_flo_now.sh >> /tmp/flo_reply.log 2>&1
+0 * * * * cd $BASE_DIR && /bin/sh ./reply_flo_now.sh >> /tmp/flo_reply.log 2>&1
 # END OPENCLAW_FLO_REPLY
 EOF
 

@@ -23,7 +23,7 @@ ALLOWED_REPLY_SENDERS = {
     for s in os.getenv("ALLOWED_REPLY_SENDERS", FLO_EMAIL).split(",")
     if s.strip()
 }
-MAX_REPLIES_PER_DAY = int(os.getenv("MAX_REPLIES_PER_DAY", "2"))
+MAX_REPLIES_PER_DAY = int(os.getenv("MAX_REPLIES_PER_DAY", "999"))
 
 if not IMAP_HOST or not IMAP_USER or not IMAP_PASS:
     raise SystemExit("IMAP credentials missing (IMAP_HOST/IMAP_USER/IMAP_PASS)")
@@ -83,7 +83,7 @@ mail = imaplib.IMAP4_SSL(IMAP_HOST, IMAP_PORT)
 mail.login(IMAP_USER, IMAP_PASS)
 mail.select(IMAP_FOLDER)
 
-status, data = mail.search(None, 'UNSEEN')
+status, data = mail.search(None, 'ALL')
 if status != "OK":
     print("NO_SEARCH_RESULTS")
     mail.logout()
@@ -95,8 +95,10 @@ if not msg_ids:
     mail.logout()
     raise SystemExit(0)
 
-# newest first
-msg_ids = list(reversed(msg_ids))
+# oldest first, damit historisch sauber abgearbeitet wird
+msg_ids = list(msg_ids)
+
+sent_count = 0
 
 for msg_id in msg_ids:
     sid = msg_id.decode("utf-8", errors="ignore")
@@ -133,6 +135,10 @@ for msg_id in msg_ids:
     body_in = re.sub(r"\s+", " ", body_in).strip()
     teaser = body_in[:220] + ("…" if len(body_in) > 220 else "")
 
+    if state.get("daily", {}).get(today, 0) >= MAX_REPLIES_PER_DAY:
+        print("DAILY_LIMIT_REACHED")
+        break
+
     reply_subject = f"Re: {subj}" if subj else "Kurze Antwort aus der Knieschleifer-Zentrale"
     base = random.choice(templates)
     reply_body = f"{base}\n\nKurz zu deiner Nachricht: \"{teaser or 'Gelesen und notiert.'}\"\n\n– Kurvenkathi"
@@ -153,10 +159,13 @@ for msg_id in msg_ids:
     state.setdefault("daily", {})[today] = state.get("daily", {}).get(today, 0) + 1
     save_state(state)
 
+    sent_count += 1
     print("FLO_REPLY_SENT")
-    break
-else:
+
+if sent_count == 0:
     print("NO_ACTION")
+else:
+    print(f"REPLIED_COUNT:{sent_count}")
 
 mail.close()
 mail.logout()
